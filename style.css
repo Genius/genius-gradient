@@ -5,3 +5,7 @@
   background-size: cover;
   background-blend-mode: color;
 }
+
+#download-image {
+  display: none;
+}

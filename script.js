@@ -6,6 +6,8 @@ $(() => {
     reader.addEventListener("load", function () {
       $('#main').css('background', `url(https://cl.ly/e6683f9832e7/gradient-01.png), url(${reader.result})`).
                  css('background-size', 'cover');
+      
+      $('#download-image').show();
     }, false);
 
     if (file) {
