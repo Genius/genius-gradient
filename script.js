@@ -14,4 +14,13 @@ $(() => {
       reader.readAsDataURL(file);
     }
   });
+  
+  $('#download-image').click(function() {
+    html2canvas($('#main')[0]).then(canvas => {
+      canvas.toBlob((blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        $('#download-link').attr('href', objectUrl)[0].click();
+      });
+    });
+  });
 });
