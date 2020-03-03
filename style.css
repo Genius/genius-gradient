@@ -1,11 +1,7 @@
-/* CSS files add styling rules to your content */
-
-body {
-  font-family: helvetica, arial, sans-serif;
-  margin: 2em;
-}
-
-h1 {
-  font-style: italic;
-  color: #373fff;
+#main {
+  width: 1920px;
+  height: 1080px;
+  
+  background-size: cover;
+  background-blend-mode: color;
 }
