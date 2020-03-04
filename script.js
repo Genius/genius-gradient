@@ -1,47 +1,47 @@
-function loadImage = function(url) {
-  
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img');
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      resolve(this);
+    }
+    img.src = url;
+  });
+}
+
+function readFileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", function () {
+      resolve(reader.result);
+    }, false);
+    reader.readAsDataURL(file);
+  });
 }
 
 $(() => {
-  $('#image-upload').on('change', function() {
+  $('#image-upload').on('change', async function() {
     const file = $(this)[0].files[0];
-    const reader = new FileReader();
+    if (!file) return;
+    
+    const fileDataURL = await readFileToDataUrl(file);
+    const gradient = await loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+    const uploadImage = await loadImage(fileDataURL);
 
-    reader.addEventListener("load", function () {
-      const resultImageData = reader.result;
-      // $('#main').css('background', `url(https://cl.ly/e6683f9832e7/gradient-01.png), url(${reader.result})`).
-      //            css('background-size', 'cover');
-      
-      const img = document.createElement("img");
-      img.src = 'https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356';
-      img.crossOrigin = 'anonymous';
-      img.onload = function() {
-        const canvas = document.createElement("canvas");
-        canvas.width = 1920;
-        canvas.height = 1080;
-        const context = canvas.getContext("2d");
-        context.globalCompositeOperation = "color";
-        
-        const uploadImage = document.createElement('img');
-        uploadImage.onload = function() {
-          context.drawImage(this, 0, 0);  
-          const data = canvas.toDataURL("image/jpeg");
-          $('#main').css('background', `url(${data})`);
-        };
-        uploadImage.src = resultImageData;
-        
-        //context.drawImage(this, 0, 0, 1920, 1920 * this.height / this.width)
-        
-//         const data = canvas.toDataURL("image/jpeg");
-        
-//         $('#main').css('background', `url(${data})`);
-        $('#download-image').show();
-      };
-    }, false);
+    const canvas = document.createElement("canvas");
+    canvas.width = 1920;
+    canvas.height = 1080;
+    
+    const context = canvas.getContext("2d");
+    context.globalCompositeOperation = "color";
 
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    context.drawImage(uploadImage, 0, 0);  
+    context.drawImage(gradient, 0, 0, 1920, 1920 * gradient.height / gradient.width);
+
+    const data = canvas.toDataURL("image/jpeg");
+
+    $('#main').css('background', `url(${data})`);
+    $('#download-image').show();      
   });
   
   $('#download-image').click(function() {
@@ -53,69 +53,3 @@ $(() => {
     });
   });
 });
-
-;(function(window) {
-
-  var __f = function(obj) {
-    if (typeof window[obj] === "undefined") {
-      if (typeof console !== "undefined") {
-        console.log("Warning: canvas context not supported (" + obj + " needed)");
-      }
-      return false;
-    }
-    return true;
-  };
-
-  if (!__f("HTMLCanvasElement")) { return; }
-
-  document.addEventListener("DOMContentLoaded", function() {
-    var supportsBackgroundBlendMode = window.getComputedStyle(document.body).backgroundBlendMode;
-    if(typeof supportsBackgroundBlendMode === "undefined") {  
-
-      // TODO: check for Canvas composite support
-
-      createBlendedBackgrounds();
-    }
-  }, false);
-
-  var createBlendedBackgrounds = function() {
-    var els = document.querySelectorAll("[data-blend]");
-    for(var i = 0; i < els.length; i++) {
-      var el = els[i],
-          type = el.getAttribute("data-blend"),
-          image = el.getAttribute("data-blend-image"),
-          color = el.getAttribute("data-blend-color");
-      processElement(el,type,image,color);
-    }
-  };
-
-  var processElement = function(el,type,image,color) {
-    var backgroundImageURL = image,
-        backgroundColor = color;
-
-    createBlendedBackgroundImageFromURLAndColor(backgroundImageURL, backgroundColor, type, function(imgData) {
-      el.style.backgroundImage = "url(" + imgData + ")";
-    });
-  };
-
-  var createBlendedBackgroundImageFromURLAndColor = function(url, color, type, callback) {
-
-    // TODO: add alpha channel
-
-    var img = document.createElement("img");
-    img.src = url;
-    img.onload = function() {
-      var canvas = document.createElement("canvas");
-      canvas.width = this.naturalWidth;
-      canvas.height = this.naturalHeight;
-      var context = canvas.getContext("2d");
-      context.globalCompositeOperation = type;
-      context.drawImage(this, 0, 0);
-      context.fillStyle = color;
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      var data = canvas.toDataURL("image/jpeg");
-      callback(data);
-    };
-  };
-
-})(window);
