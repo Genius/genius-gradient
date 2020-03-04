@@ -1,4 +1,15 @@
 $(() => {
+  const 
+  const img = document.createElement("img");
+  img.src = 'https://cl.ly/e6683f9832e7/gradient-01.png';
+  img.onload = function() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1920;
+    canvas.height = 1080;
+    const context = canvas.getContext("2d").drawImage(this, 0, 0);
+    canvas.toDataURL('image/png');
+  };
+  
   $('#image-upload').on('change', function() {
     const file = $(this)[0].files[0];
     const reader = new FileReader();
@@ -19,6 +30,7 @@ $(() => {
         const uploadImage = document.createElement('img');
         uploadImage.src = reader.result;
         
+        context.drawImage(this, 0, 0);
         context.drawImage(uploadImage, 0, 0);
         const data = canvas.toDataURL("image/jpeg");
         

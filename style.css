@@ -3,7 +3,7 @@
   height: 1080px;
   
   background-size: cover;
-  background-blend-mode: color;
+  /*background-blend-mode: color;*/
 }
 
 #download-image {
