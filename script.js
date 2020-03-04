@@ -4,8 +4,8 @@ $(() => {
     const reader = new FileReader();
 
     reader.addEventListener("load", function () {
-      $('#main').css('background', `url(https://cl.ly/e6683f9832e7/gradient-01.png), url(${reader.result})`).
-                 css('background-size', 'cover');
+      // $('#main').css('background', `url(https://cl.ly/e6683f9832e7/gradient-01.png), url(${reader.result})`).
+      //            css('background-size', 'cover');
       
       const img = document.createElement("img");
       img.src = 'https://cl.ly/e6683f9832e7/gradient-01.png';
@@ -15,12 +15,16 @@ $(() => {
         canvas.height = 1080;
         const context = canvas.getContext("2d");
         context.globalCompositeOperation = "color";
-        context.drawImage(reader.result, 0, 0);
+        
+        const uploadImage = document.createElement('img');
+        uploadImage.src = reader.result;
+        
+        context.drawImage(uploadImage, 0, 0);
         const data = canvas.toDataURL("image/jpeg");
-        callback(data);
+        
+        $('#main').css('background', `url(${data})`);
+        $('#download-image').show();
       };
-      
-      $('#download-image').show();
     }, false);
 
     if (file) {
