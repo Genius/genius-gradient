@@ -1,9 +1,14 @@
+function loadImage = function(url) {
+  
+}
+
 $(() => {
   $('#image-upload').on('change', function() {
     const file = $(this)[0].files[0];
     const reader = new FileReader();
 
     reader.addEventListener("load", function () {
+      const resultImageData = reader.result;
       // $('#main').css('background', `url(https://cl.ly/e6683f9832e7/gradient-01.png), url(${reader.result})`).
       //            css('background-size', 'cover');
       
@@ -18,17 +23,18 @@ $(() => {
         context.globalCompositeOperation = "color";
         
         const uploadImage = document.createElement('img');
-        console.log(reader.result);
-        uploadImage.src = reader.result;
         uploadImage.onload = function() {
           context.drawImage(this, 0, 0);  
+          const data = canvas.toDataURL("image/jpeg");
+          $('#main').css('background', `url(${data})`);
         };
+        uploadImage.src = resultImageData;
         
         //context.drawImage(this, 0, 0, 1920, 1920 * this.height / this.width)
         
-        const data = canvas.toDataURL("image/jpeg");
+//         const data = canvas.toDataURL("image/jpeg");
         
-        $('#main').css('background', `url(${data})`);
+//         $('#main').css('background', `url(${data})`);
         $('#download-image').show();
       };
     }, false);
