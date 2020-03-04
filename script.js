@@ -54,7 +54,10 @@ $(() => {
     const data = canvas.toDataURL("image/jpeg");
     const canvasBlob = await getBlobFromCanvas(canvas);
 
-    $('#main').css('background', `url(${data})`);
+    $('#main').
+      css('height', `${HEIGHT}px`).
+      css('width', `${WIDTH}px`).
+      css('background', `url(${data})`);
     $('#download-image').attr('href', URL.createObjectURL(canvasBlob)).show();      
   });
 });
