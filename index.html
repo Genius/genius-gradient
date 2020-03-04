@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Hello!</title>
+    <title>Gradient Filter | Genius</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
-    <!-- import the webpage's stylesheet -->
     <link rel="stylesheet" href="/style.css">
-    
-    <!-- import the webpage's javascript file -->
     <script src="/script.js" defer></script>
   </head>  
   <body>
     <h1>
       Choose a file to get started
     </h1>
-    <input type="file" id="image-upload"><br>
-    <button id="download-image">Download image</button>
+    
+    <input type="file" id="image-upload"><br><br>
+    
+    <a id="download-image" href="" download>Download image</a>
+    
     <br><br>
-    <div id="main">
-    </div>
-    <a href="" id="download-link" download>download</a>
+    
+    <div id="main"></div>
   </body>
 </html>

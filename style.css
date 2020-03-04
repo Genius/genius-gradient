@@ -1,15 +1,8 @@
 #main {
   width: 1920px;
   height: 1080px;
-  
-  background-size: cover;
-  /*background-blend-mode: color;*/
 }
 
 #download-image {
-  display: none;
-}
-
-#download-link {
   display: none;
 }
