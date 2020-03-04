@@ -18,11 +18,14 @@ $(() => {
         context.globalCompositeOperation = "color";
         
         const uploadImage = document.createElement('img');
+        console.log(reader.result);
         uploadImage.src = reader.result;
+        uploadImage.onload = function() {
+          context.drawImage(this, 0, 0);  
+        };
         
-        context.drawImage(this, 0, 0, 100, 100 * this.height / this.width)
-        context.drawImage(this, 0, 0);
-        // context.drawImage(uploadImage, 0, 0);
+        //context.drawImage(this, 0, 0, 1920, 1920 * this.height / this.width)
+        
         const data = canvas.toDataURL("image/jpeg");
         
         $('#main').css('background', `url(${data})`);
