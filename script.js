@@ -36,6 +36,10 @@ $(() => {
     const fileDataURL = await readFileToDataUrl(file);
     const gradient = await loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
     const uploadImage = await loadImage(fileDataURL);
+    
+    if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
+      return alert(`Image must be exactly ${WIDTH}x${HEIGHT}!`);
+    }
 
     const canvas = document.createElement("canvas");
     canvas.width = WIDTH;
