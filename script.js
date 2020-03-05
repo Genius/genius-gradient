@@ -28,13 +28,16 @@ function getBlobFromCanvas(canvas) {
 const HEIGHT = 1080;
 const WIDTH = 1920;
 
+const GRADIENT = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+
 $(() => {
   $('#image-upload').on('change', async function() {
     const file = $(this)[0].files[0];
     if (!file) return;
     
     const fileDataURL = await readFileToDataUrl(file);
-    const gradient = await loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+    
+    const gradient = await GRADIENT;
     const uploadImage = await loadImage(fileDataURL);
     
     if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
@@ -46,18 +49,20 @@ $(() => {
     canvas.height = HEIGHT;
     
     const context = canvas.getContext("2d");
-    context.globalCompositeOperation = "color";
 
     context.drawImage(uploadImage, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);  
+    
+    context.globalCompositeOperation = "color";
+    
     context.drawImage(gradient, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);
 
-    const data = canvas.toDataURL("image/jpeg");
     const canvasBlob = await getBlobFromCanvas(canvas);
+    const objectUrl = URL.createObjectURL(canvasBlob);
 
     $('#main').
       css('height', `${HEIGHT}px`).
       css('width', `${WIDTH}px`).
-      css('background', `url(${data})`);
-    $('#download-image').attr('href', URL.createObjectURL(canvasBlob)).show();      
+      css('background', `url(${objectUrl})`);
+    $('#download-image').attr('href', objectUrl).show();      
   });
 });
