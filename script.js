@@ -37,8 +37,8 @@ $(() => {
     
     const fileDataURL = await readFileToDataUrl(file);
     
-    const gradient = await GRADIENT;
     const uploadImage = await loadImage(fileDataURL);
+    const gradient = await GRADIENT;
     
     if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
       return alert(`Image must be exactly ${WIDTH}x${HEIGHT}!`);
@@ -49,11 +49,9 @@ $(() => {
     canvas.height = HEIGHT;
     
     const context = canvas.getContext("2d");
+    context.globalCompositeOperation = "color";
 
     context.drawImage(uploadImage, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);  
-    
-    context.globalCompositeOperation = "color";
-    
     context.drawImage(gradient, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);
 
     const canvasBlob = await getBlobFromCanvas(canvas);
