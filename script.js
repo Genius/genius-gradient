@@ -31,11 +31,15 @@ function fitImageToDimensions({image, height, width}) {
     css('height', height).
     css('width', width).
     css('background-size', 'cover').
-    css('background', `url(${image.src})`);
+    css('background', `url(${image.src})`).
+    appendTo(document.body);
+  
+  return new Promise((resolve, reject) => {
+    html2canvas(div[0]).then(canvas => {
+     loadImage(canvas.toDataURL('image/png')).then((img) => resolve(img));
+    });
+  });
 }
-
-const HEIGHT = 1080;
-const WIDTH = 1920;
 
 const GRADIENT = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
 
@@ -46,29 +50,46 @@ $(() => {
     
     const fileDataURL = await readFileToDataUrl(file);
     
-    const uploadImage = await loadImage(fileDataURL);
-    const gradient = await GRADIENT;
+    let uploadImage = await loadImage(fileDataURL);
+    let gradient = await GRADIENT;
+    let height, width;
     
-    if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
-      return alert(`Image must be exactly ${WIDTH}x${HEIGHT}!`);
+    if (uploadImage.naturalHeight <= gradient.naturalHeight) {
+      height = uploadImage.naturalHeight;
+      width = uploadImage.naturalWidth;
+      
+      gradient = await fitImageToDimensions({
+        image: gradient,
+        height: uploadImage.naturalHeight,
+        width: uploadImage.naturalWidth
+      });
+    } else {
+      height = gradient.naturalHeight;
+      width = gradient.naturalWidth;
+      
+      uploadImage = await fitImageToDimensions({
+        image: uploadImage,
+        height: gradient.naturalHeight,
+        width: gradient.naturalWidth
+      });
     }
 
     const canvas = document.createElement("canvas");
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+    canvas.width = width;
+    canvas.height = height;
     
     const context = canvas.getContext("2d");
     context.globalCompositeOperation = "color";
 
-    context.drawImage(uploadImage, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);  
-    context.drawImage(gradient, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);
+    context.drawImage(uploadImage, 0, 0);  
+    context.drawImage(gradient, 0, 0);
 
     const canvasBlob = await getBlobFromCanvas(canvas);
     const objectUrl = URL.createObjectURL(canvasBlob);
 
     $('#main').
-      css('height', `${HEIGHT}px`).
-      css('width', `${WIDTH}px`).
+      css('height', `${height}px`).
+      css('width', `${width}px`).
       css('background', `url(${objectUrl})`);
     $('#download-image').attr('href', objectUrl).show();      
   });
