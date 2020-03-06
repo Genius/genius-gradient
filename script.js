@@ -25,28 +25,8 @@ function getBlobFromCanvas(canvas) {
   });
 }
 
-function fitImageToDimensions({image, height, width}) {
-  const div = $('<div>').
-    //css('display', 'none').
-    css('height', height).
-    css('width', width).  
-    css('background', `url(${image.src})`).
-    css('background-size', 'cover').
-    appendTo(document.body);
-  
-  return new Promise((resolve, reject) => {
-    html2canvas(div[0]).then(canvas => {
-      document.body.appendChild(canvas);
-      div.hide();
-      // loadImage(canvas.toDataURL('image/png')).then((img) => {
-      //   debugger
-      //   document.body.appendChild(img);
-      //   div.hide();
-      //   resolve(img);
-      // });
-    });
-  });
-}
+const HEIGHT = 1080;
+const WIDTH = 1920;
 
 const GRADIENT = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
 
@@ -57,49 +37,30 @@ $(() => {
     
     const fileDataURL = await readFileToDataUrl(file);
     
-    let uploadImage = await loadImage(fileDataURL);
-    let gradient = await GRADIENT;
-    let height, width;
+    const uploadImage = await loadImage(fileDataURL);
+    const gradient = await GRADIENT;
     
-    if (uploadImage.naturalHeight <= gradient.naturalHeight) {
-      height = uploadImage.naturalHeight;
-      width = uploadImage.naturalWidth;
-      
-      gradient = await fitImageToDimensions({
-        image: gradient,
-        height,
-        width
-      });
-    } else {
-      height = gradient.naturalHeight;
-      width = gradient.naturalWidth;
-      
-      uploadImage = await fitImageToDimensions({
-        image: uploadImage,
-        height,
-        width
-      });
+    if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
+      return alert(`Image must be exactly ${WIDTH}x${HEIGHT}!`);
     }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
     
-//    document.body.appendChild(gradient);
+    const context = canvas.getContext("2d");
+    context.globalCompositeOperation = "color";
 
-//     const canvas = document.createElement("canvas");
-//     canvas.width = width;
-//     canvas.height = height;
-    
-//     const context = canvas.getContext("2d");
-//     context.globalCompositeOperation = "color";
+    context.drawImage(uploadImage, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);  
+    context.drawImage(gradient, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);
 
-//     //context.drawImage(uploadImage, 0, 0);  
-//     context.drawImage(gradient, 0, 0, width, height);
+    const canvasBlob = await getBlobFromCanvas(canvas);
+    const objectUrl = URL.createObjectURL(canvasBlob);
 
-//     const canvasBlob = await getBlobFromCanvas(canvas);
-//     const objectUrl = URL.createObjectURL(canvasBlob);
-
-//     $('#main').
-//       css('height', `${height}px`).
-//       css('width', `${width}px`).
-//       css('background', `url(${objectUrl})`);
-//     $('#download-image').attr('href', objectUrl).show();      
+    $('#main').
+      css('height', `${HEIGHT}px`).
+      css('width', `${WIDTH}px`).
+      css('background', `url(${objectUrl})`);
+    $('#download-image').attr('href', objectUrl).show();      
   });
 });
