@@ -27,16 +27,23 @@ function getBlobFromCanvas(canvas) {
 
 function fitImageToDimensions({image, height, width}) {
   const div = $('<div>').
-    css('display', 'none').
+    //css('display', 'none').
     css('height', height).
-    css('width', width).
-    css('background-size', 'cover').
+    css('width', width).  
     css('background', `url(${image.src})`).
+    css('background-size', 'cover').
     appendTo(document.body);
   
   return new Promise((resolve, reject) => {
     html2canvas(div[0]).then(canvas => {
-     loadImage(canvas.toDataURL('image/png')).then((img) => resolve(img));
+      document.body.appendChild(canvas);
+      div.hide();
+      // loadImage(canvas.toDataURL('image/png')).then((img) => {
+      //   debugger
+      //   document.body.appendChild(img);
+      //   div.hide();
+      //   resolve(img);
+      // });
     });
   });
 }
@@ -60,8 +67,8 @@ $(() => {
       
       gradient = await fitImageToDimensions({
         image: gradient,
-        height: uploadImage.naturalHeight,
-        width: uploadImage.naturalWidth
+        height,
+        width
       });
     } else {
       height = gradient.naturalHeight;
@@ -69,28 +76,30 @@ $(() => {
       
       uploadImage = await fitImageToDimensions({
         image: uploadImage,
-        height: gradient.naturalHeight,
-        width: gradient.naturalWidth
+        height,
+        width
       });
     }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
     
-    const context = canvas.getContext("2d");
-    context.globalCompositeOperation = "color";
+//    document.body.appendChild(gradient);
 
-    context.drawImage(uploadImage, 0, 0);  
-    context.drawImage(gradient, 0, 0);
+//     const canvas = document.createElement("canvas");
+//     canvas.width = width;
+//     canvas.height = height;
+    
+//     const context = canvas.getContext("2d");
+//     context.globalCompositeOperation = "color";
 
-    const canvasBlob = await getBlobFromCanvas(canvas);
-    const objectUrl = URL.createObjectURL(canvasBlob);
+//     //context.drawImage(uploadImage, 0, 0);  
+//     context.drawImage(gradient, 0, 0, width, height);
 
-    $('#main').
-      css('height', `${height}px`).
-      css('width', `${width}px`).
-      css('background', `url(${objectUrl})`);
-    $('#download-image').attr('href', objectUrl).show();      
+//     const canvasBlob = await getBlobFromCanvas(canvas);
+//     const objectUrl = URL.createObjectURL(canvasBlob);
+
+//     $('#main').
+//       css('height', `${height}px`).
+//       css('width', `${width}px`).
+//       css('background', `url(${objectUrl})`);
+//     $('#download-image').attr('href', objectUrl).show();      
   });
 });
