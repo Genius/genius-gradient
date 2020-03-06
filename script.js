@@ -25,8 +25,61 @@ function getBlobFromCanvas(canvas) {
   });
 }
 
-const HEIGHT = 1080;
-const WIDTH = 1920;
+/**
+ * By Ken Fyrstenberg Nilsen
+ *
+ * drawImageProp(context, image [, x, y, width, height [,offsetX, offsetY]])
+ *
+ * If image and context are only arguments rectangle will equal canvas
+ * https://stackoverflow.com/questions/21961839/simulation-background-size-cover-in-canvas
+*/
+function drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
+
+    if (arguments.length === 2) {
+        x = y = 0;
+        w = ctx.canvas.width;
+        h = ctx.canvas.height;
+    }
+
+    // default offset is center
+    offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+    offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+
+    // keep bounds [0.0, 1.0]
+    if (offsetX < 0) offsetX = 0;
+    if (offsetY < 0) offsetY = 0;
+    if (offsetX > 1) offsetX = 1;
+    if (offsetY > 1) offsetY = 1;
+
+    var iw = img.width,
+        ih = img.height,
+        r = Math.min(w / iw, h / ih),
+        nw = iw * r,   // new prop. width
+        nh = ih * r,   // new prop. height
+        cx, cy, cw, ch, ar = 1;
+
+    // decide which gap to fill    
+    if (nw < w) ar = w / nw;                             
+    if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;  // updated
+    nw *= ar;
+    nh *= ar;
+
+    // calc source rectangle
+    cw = iw / (nw / w);
+    ch = ih / (nh / h);
+
+    cx = (iw - cw) * offsetX;
+    cy = (ih - ch) * offsetY;
+
+    // make sure source rectangle is valid
+    if (cx < 0) cx = 0;
+    if (cy < 0) cy = 0;
+    if (cw > iw) cw = iw;
+    if (ch > ih) ch = ih;
+
+    // fill image in dest. rectangle
+    ctx.drawImage(img, cx, cy, cw, ch,  x, y, w, h);
+}
 
 const GRADIENT = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
 
@@ -40,26 +93,25 @@ $(() => {
     const uploadImage = await loadImage(fileDataURL);
     const gradient = await GRADIENT;
     
-    if (uploadImage.naturalHeight !== HEIGHT || uploadImage.naturalWidth !== WIDTH) {
-      return alert(`Image must be exactly ${WIDTH}x${HEIGHT}!`);
-    }
+    const height = uploadImage.naturalHeight;
+    const width = uploadImage.naturalWidth;
 
     const canvas = document.createElement("canvas");
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+    canvas.width = width;
+    canvas.height = height;
     
     const context = canvas.getContext("2d");
     context.globalCompositeOperation = "color";
 
-    context.drawImage(uploadImage, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);  
-    context.drawImage(gradient, 0, 0, WIDTH, WIDTH * gradient.height / gradient.width);
+    context.drawImage(uploadImage, 0, 0);
+    drawImageProp(context, gradient, 0, 0, width, height);
 
     const canvasBlob = await getBlobFromCanvas(canvas);
     const objectUrl = URL.createObjectURL(canvasBlob);
 
     $('#main').
-      css('height', `${HEIGHT}px`).
-      css('width', `${WIDTH}px`).
+      css('height', `${height}px`).
+      css('width', `${width}px`).
       css('background', `url(${objectUrl})`);
     $('#download-image').attr('href', objectUrl).show();      
   });
