@@ -30,6 +30,7 @@ function fitImageToDimensions({image, height, width}) {
     css('display', 'none').
     css('height', height).
     css('width', width).
+    css('background-size', 'cover').
     css('background', `url(${image.src})`);
 }
 
