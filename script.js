@@ -1,40 +1,13 @@
-function loadImage(url) {
-  return new Promise((resolve, reject) => {
-    const img = document.createElement('img');
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      resolve(this);
-    }
-    img.src = url;
-  });
-}
-
-function readFileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", function () {
-      resolve(reader.result);
-    }, false);
-    reader.readAsDataURL(file);
-  });
-}
-
-function getBlobFromCanvas(canvas) {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => resolve(blob));
-  });
-}
-
 /**
  * By Ken Fyrstenberg Nilsen
  *
  * drawImageProp(context, image [, x, y, width, height [,offsetX, offsetY]])
  *
  * If image and context are only arguments rectangle will equal canvas
+ *
  * https://stackoverflow.com/questions/21961839/simulation-background-size-cover-in-canvas
 */
 function drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
-
     if (arguments.length === 2) {
         x = y = 0;
         w = ctx.canvas.width;
@@ -81,7 +54,34 @@ function drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
     ctx.drawImage(img, cx, cy, cw, ch,  x, y, w, h);
 }
 
-const GRADIENT = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = document.createElement('img');
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      resolve(this);
+    }
+    img.src = url;
+  });
+}
+
+function readFileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", function () {
+      resolve(reader.result);
+    }, false);
+    reader.readAsDataURL(file);
+  });
+}
+
+function getBlobFromCanvas(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => resolve(blob));
+  });
+}
+
+const gradientPromise = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
 
 $(() => {
   $('#image-upload').on('change', async function() {
@@ -91,7 +91,7 @@ $(() => {
     const fileDataURL = await readFileToDataUrl(file);
     
     const uploadImage = await loadImage(fileDataURL);
-    const gradient = await GRADIENT;
+    const gradient = await gradientPromise;
     
     const height = uploadImage.naturalHeight;
     const width = uploadImage.naturalWidth;
