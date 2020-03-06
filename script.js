@@ -25,6 +25,14 @@ function getBlobFromCanvas(canvas) {
   });
 }
 
+function fitImageToDimensions({image, height, width}) {
+  const div = $('<div>').
+    css('display', 'none').
+    css('height', height).
+    css('width', width).
+    css('background', `url(${image.src})`);
+}
+
 const HEIGHT = 1080;
 const WIDTH = 1920;
 
