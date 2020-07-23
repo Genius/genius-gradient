@@ -110,8 +110,8 @@ $(() => {
     const objectUrl = URL.createObjectURL(canvasBlob);
 
     $('#main').
-      css('height', `${height}px`).
-      css('width', `${width}px`).
+      css('height', `500px`).
+      css('width', `auto`).
       css('background', `url(${objectUrl})`);
     $('#download-image').attr('href', objectUrl).show();      
   });
