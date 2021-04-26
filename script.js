@@ -81,7 +81,7 @@ function getBlobFromCanvas(canvas) {
   });
 }
 
-const gradientPromise = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+const gradientPromise = loadImage('gradient.png');
 
 document.querySelector('#image-upload').addEventListener('change', async function(event) {
   const file = event.target[0].files[0];
