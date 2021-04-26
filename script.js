@@ -84,7 +84,7 @@ function getBlobFromCanvas(canvas) {
 const gradientPromise = loadImage('gradient.png');
 
 document.querySelector('#image-upload').addEventListener('change', async function(event) {
-  const file = event.target[0].files[0];
+  const file = event.target.files[0];
   if (!file) return;
 
   const fileDataURL = await readFileToDataUrl(file);
