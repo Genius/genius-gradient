@@ -81,38 +81,39 @@ function getBlobFromCanvas(canvas) {
   });
 }
 
-const gradientPromise = loadImage('https://cdn.glitch.com/fffdd8da-0106-4e08-94ff-81950a79b744%2Fgradient-01.png?v=1583287915356');
+const gradientPromise = loadImage('gradient.png');
 
-$(() => {
-  $('#image-upload').on('change', async function() {
-    const file = $(this)[0].files[0];
-    if (!file) return;
-    
-    const fileDataURL = await readFileToDataUrl(file);
-    
-    const uploadImage = await loadImage(fileDataURL);
-    const gradient = await gradientPromise;
-    
-    const height = uploadImage.naturalHeight;
-    const width = uploadImage.naturalWidth;
+document.querySelector('#image-upload').addEventListener('change', async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    
-    const context = canvas.getContext("2d");
-    context.globalCompositeOperation = "color";
+  const fileDataURL = await readFileToDataUrl(file);
 
-    context.drawImage(uploadImage, 0, 0);
-    drawImageProp(context, gradient, 0, 0, width, height);
+  const uploadImage = await loadImage(fileDataURL);
+  const gradient = await gradientPromise;
 
-    const canvasBlob = await getBlobFromCanvas(canvas);
-    const objectUrl = URL.createObjectURL(canvasBlob);
+  const height = uploadImage.naturalHeight;
+  const width = uploadImage.naturalWidth;
 
-    $('#main').
-      css('height', `${height}px`).
-      css('width', `${width}px`).
-      css('background', `url(${objectUrl})`);
-    $('#download-image').attr('href', objectUrl).show();      
-  });
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d");
+  context.globalCompositeOperation = "color";
+
+  context.drawImage(uploadImage, 0, 0);
+  drawImageProp(context, gradient, 0, 0, width, height);
+
+  const canvasBlob = await getBlobFromCanvas(canvas);
+  const objectUrl = URL.createObjectURL(canvasBlob);
+
+  const main = document.querySelector('#main');
+  main.style.height = `${height}px`;
+  main.style.width = `${width}px`;
+  main.style.background = `url(${objectUrl})`;
+
+  const downloadImage = document.querySelector('#download-image');
+  downloadImage.setAttribute('href', objectUrl);
+  downloadImage.style.display = 'block';  
 });
